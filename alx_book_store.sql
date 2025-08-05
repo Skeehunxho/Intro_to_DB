@@ -1,45 +1,60 @@
 -- Create the database
-CREATE DATABASE IF NOT EXISTS alx_book_store;
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'alx_book_store')
+BEGIN
+    CREATE DATABASE alx_book_store;
+END
+GO
 USE alx_book_store;
+GO
 
--- Create Authors table
+-- Create the Authors table
+IF OBJECT_ID('Authors', 'U') IS NOT NULL DROP TABLE Authors;
 CREATE TABLE Authors (
-    author_id INT AUTO_INCREMENT PRIMARY KEY,
+    author_id INT IDENTITY(1,1) PRIMARY KEY,
     author_name VARCHAR(215) NOT NULL
 );
+GO
 
--- Create Books table
+-- Create the Books table
+IF OBJECT_ID('Books', 'U') IS NOT NULL DROP TABLE Books;
 CREATE TABLE Books (
-    book_id INT AUTO_INCREMENT PRIMARY KEY,
+    book_id INT IDENTITY(1,1) PRIMARY KEY,
     title VARCHAR(130) NOT NULL,
-    author_id INT NOT NULL,
-    price DOUBLE NOT NULL,
+    author_id INT,
+    price FLOAT NOT NULL,
     publication_date DATE,
-    FOREIGN KEY (author_id) REFERENCES Authors(author_id)
+    CONSTRAINT FK_Books_Authors FOREIGN KEY (author_id) REFERENCES Authors(author_id)
 );
+GO
 
--- Create Customers table
+-- Create the Customers table
+IF OBJECT_ID('Customers', 'U') IS NOT NULL DROP TABLE Customers;
 CREATE TABLE Customers (
-    customer_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT IDENTITY(1,1) PRIMARY KEY,
     customer_name VARCHAR(215) NOT NULL,
     email VARCHAR(215) UNIQUE NOT NULL,
-    address TEXT
+    address NVARCHAR(MAX)
 );
+GO
 
--- Create Orders table
+-- Create the Orders table
+IF OBJECT_ID('Orders', 'U') IS NOT NULL DROP TABLE Orders;
 CREATE TABLE Orders (
-    order_id INT AUTO_INCREMENT PRIMARY KEY,
-    customer_id INT NOT NULL,
+    order_id INT IDENTITY(1,1) PRIMARY KEY,
+    customer_id INT,
     order_date DATE NOT NULL,
-    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
+    CONSTRAINT FK_Orders_Customers FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
 );
+GO
 
--- Create Order_Details table
+-- Create the Order_Details table
+IF OBJECT_ID('Order_Details', 'U') IS NOT NULL DROP TABLE Order_Details;
 CREATE TABLE Order_Details (
-    orderdetailid INT AUTO_INCREMENT PRIMARY KEY,
-    order_id INT NOT NULL,
-    book_id INT NOT NULL,
-    quantity DOUBLE NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES Orders(order_id),
-    FOREIGN KEY (book_id) REFERENCES Books(book_id)
+    orderdetailid INT IDENTITY(1,1) PRIMARY KEY,
+    order_id INT,
+    book_id INT,
+    quantity FLOAT NOT NULL,
+    CONSTRAINT FK_OrderDetails_Orders FOREIGN KEY (order_id) REFERENCES Orders(order_id),
+    CONSTRAINT FK_OrderDetails_Books FOREIGN KEY (book_id) REFERENCES Books(book_id)
 );
+GO
